@@ -1,0 +1,12 @@
+pipeline: "snakemake_download_data"
+
+
+##################################################################
+# DATA SOURCES BELOW
+metadata:
+  treatmentMappingFile:
+    description: BHKLAB curated mapping file between GDSC and standardized treatment ID names.
+    url: https://raw.githubusercontent.com/BHKLAB-DataProcessing/Annotations/master/drugs_with_ids.csv
+  sampleMappingFile:
+    description: BHKLAB curated mapping file between GDSC and standardized sample ID names.
+    url: https://raw.githubusercontent.com/BHKLAB-DataProcessing/Annotations/master/cell_annotation_all.csv

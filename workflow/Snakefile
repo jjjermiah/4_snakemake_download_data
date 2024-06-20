@@ -1,0 +1,39 @@
+from pathlib import Path
+from snakemake.remote.HTTP import RemoteProvider as HTTPRemoteProvider
+HTTP = HTTPRemoteProvider()
+
+configfile: "config/config.yaml"
+
+rule all:
+    input:
+        expand("results/summary{nu}.txt", nu=["1", "_2"])
+    output:
+        "results/output.txt"
+    shell:
+        "cat {input} > {output}"
+
+rule makesummary:
+    input:
+        treatmentMetadata = "procdata/treatmentMappingFile.txt",
+        sampleMetadata = "procdata/sampleMappingFile.txt"
+    output:
+        "results/summary{nu}.txt",
+    threads:
+        2,
+    log:
+        "logs/makesummary{nu}.log",
+    shell:
+        "echo 'sleeping for 10 seconds' && sleep 10 && cat {input} > {output} | tee {log} 2>&1"
+
+rule medimg:
+    input:
+        treatmentMetadata = HTTP.remote(config["metadata"]["treatmentMappingFile"]["url"]),
+        sampleMetadata = HTTP.remote(config["metadata"]["sampleMappingFile"]["url"]),
+    output:
+        treatmentMetadata = "procdata/treatmentMappingFile.txt",
+        sampleMetadata = "procdata/sampleMappingFile.txt",
+    shell:
+        """
+        cat {input.treatmentMetadata} > {output.treatmentMetadata}
+        cat {input.sampleMetadata} > {output.sampleMetadata}
+        """
